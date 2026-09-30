@@ -1,0 +1,51 @@
+Evidence ID: EVID-M01-003
+Captured: 2026-09-30T12:54:04+00:00
+Operator scope: authorized public-source retrieval only
+Evidence class: RUN
+Target source repository: https://github.com/onyx-dot-app/onyx.git
+Requested revision: e7240a64ed06fff6f665fdde2bd90c4a3052d004
+
+Pre-retrieval integrity checks
+
+$ pwd
+/workspace/M01
+
+$ git -C /workspace/M01 status --short
+[no output]
+
+$ git -C /workspace/M01 rev-parse HEAD
+3b0acf669fc166ebc0ef1c3caea49522467f78ba
+
+$ git -C /workspace/M01 remote -v
+[no output]
+
+$ ls -ld /workspace/onyx-source 2>/dev/null || true
+[no output: target did not exist]
+
+Separate minimal clone attempt
+
+$ git clone --filter=blob:none --no-checkout https://github.com/onyx-dot-app/onyx.git /workspace/onyx-source
+Cloning into '/workspace/onyx-source'...
+fatal: unable to access 'https://github.com/onyx-dot-app/onyx.git/': CONNECT tunnel failed, response 403
+Exit status: 128
+
+Post-failure checks
+
+$ date --iso-8601=seconds
+2026-09-30T12:54:04+00:00
+
+$ if [ -e /workspace/onyx-source ]; then echo PRESENT; else echo '/workspace/onyx-source: ABSENT'; fi
+/workspace/onyx-source: ABSENT
+
+$ git -C /workspace/M01 status --short
+[no output before creation of this evidence artifact]
+
+Classification and limitations
+
+- Retrieval was blocked at the environment's outbound CONNECT boundary with HTTP 403.
+- This result does not prove that the repository or requested commit is absent upstream.
+- No `/workspace/onyx-source` repository or partial target remained after failure.
+- Provenance verification and local possession of the exact commit remain NOT RUN.
+- Required path and blob-identity verification remain NOT RUN.
+- `git ls-remote <URL> <commit-SHA>` was not used in this resumption attempt and is not an authoritative arbitrary-commit existence check; the future gate is local Git object possession and resolution.
+- No checkout, reset, clean, Docker startup, application request, scanner, runtime, model-provider access, credentials, or upstream modification occurred.
