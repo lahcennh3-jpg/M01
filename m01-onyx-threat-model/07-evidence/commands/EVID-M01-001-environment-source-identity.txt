@@ -1,0 +1,50 @@
+Evidence ID: EVID-M01-001
+Captured: 2026-09-30 (inspection date supplied by environment; exact command time not retained)
+Working directory: /workspace/M01
+Evidence class: RUN for local command execution; SRC unavailable for requested Onyx pin
+
+$ pwd
+/workspace/M01
+
+$ git status --short
+[no output]
+
+$ git rev-parse --show-toplevel
+/workspace/M01
+
+$ git rev-parse HEAD
+c593972edc2c4ddcc0890d7bfc5e6b7b670bccfa
+
+$ git remote -v
+[no output]
+
+$ git cat-file -e 'e7240a64ed06fff6f665fdde2bd90c4a3052d004^{commit}'
+fatal: Not a valid object name e7240a64ed06fff6f665fdde2bd90c4a3052d004^{commit}
+Exit status: non-zero (the commands were initially issued as one shell sequence; execution continued)
+
+$ git show -s --format=fuller e7240a64ed06fff6f665fdde2bd90c4a3052d004
+fatal: bad object e7240a64ed06fff6f665fdde2bd90c4a3052d004
+Exit status: non-zero
+
+Supplementary read-only checks:
+$ git show -s --format=fuller HEAD
+commit c593972edc2c4ddcc0890d7bfc5e6b7b670bccfa
+Author:     lahcennh3-jpg <lahcennh3@gmail.com>
+AuthorDate: Wed Sep 30 13:39:04 2026 +0100
+Commit:     lahcennh3-jpg <lahcennh3@gmail.com>
+CommitDate: Wed Sep 30 13:39:04 2026 +0100
+
+    Initialize repository
+
+$ git remote
+[no output]
+
+$ git status --porcelain=v2 --branch
+# branch.oid c593972edc2c4ddcc0890d7bfc5e6b7b670bccfa
+# branch.head work
+
+Limitations:
+- The requested Onyx revision is not present in the local object database.
+- No Git remote is configured, so repository provenance cannot be established locally.
+- No network retrieval was attempted; the user explicitly required recording this failure and not silently fetching/changing the environment.
+- No Onyx source, runtime, Docker service, external provider, or scanner was accessed.

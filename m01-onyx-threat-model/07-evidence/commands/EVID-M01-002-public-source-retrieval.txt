@@ -1,0 +1,62 @@
+Evidence ID: EVID-M01-002
+Captured: 2026-09-30T12:47:49+00:00
+Operator scope: authorized public-source retrieval only
+Evidence class: RUN
+Target source repository: https://github.com/onyx-dot-app/onyx
+Requested revision: e7240a64ed06fff6f665fdde2bd90c4a3052d004
+
+M01-01A — pre-retrieval checks
+
+$ pwd
+/workspace/M01
+
+$ git -C /workspace/M01 status --short
+[no output]
+
+$ git -C /workspace/M01 rev-parse HEAD
+3d57ebd4db9fe4d5ea0d09d5a4181e87e24eb89a
+
+$ ls -ld /workspace/onyx-source 2>/dev/null || true
+[no output: target did not exist]
+
+M01-01B — separate minimal clone attempt
+
+$ git clone --filter=blob:none --no-checkout https://github.com/onyx-dot-app/onyx.git /workspace/onyx-source
+Cloning into '/workspace/onyx-source'...
+fatal: unable to access 'https://github.com/onyx-dot-app/onyx.git/': CONNECT tunnel failed, response 403
+Exit status: 128
+
+Post-failure target check:
+$ if [ -e /workspace/onyx-source ]; then find /workspace/onyx-source -maxdepth 2 -mindepth 1 -print; else echo 'ABSENT'; fi
+ABSENT
+
+Narrow public-ref query used to distinguish clone setup from general Git HTTPS access:
+$ git ls-remote https://github.com/onyx-dot-app/onyx.git e7240a64ed06fff6f665fdde2bd90c4a3052d004
+fatal: unable to access 'https://github.com/onyx-dot-app/onyx.git/': CONNECT tunnel failed, response 403
+Exit status: 128
+
+Alternate immutable archive reachability check (headers only; no archive written):
+$ curl --fail --silent --show-error --location --head --max-time 30 'https://codeload.github.com/onyx-dot-app/onyx/tar.gz/e7240a64ed06fff6f665fdde2bd90c4a3052d004'
+HTTP/1.1 403 Forbidden
+content-length: 9
+content-type: text/plain
+date: Wed, 30 Sep 2026 12:47:38 GMT
+server: envoy
+connection: close
+
+curl: (22) The requested URL returned error: 403
+Exit status: 22
+
+Final state at capture:
+$ git -C /workspace/M01 status --short
+[no output before creation of this evidence artifact]
+
+$ test ! -e /workspace/onyx-source && echo '/workspace/onyx-source: ABSENT'
+/workspace/onyx-source: ABSENT
+
+Limitations and interpretation:
+- The environment's outbound CONNECT path rejected both GitHub Git HTTPS and codeload GitHub with HTTP 403.
+- This is an environment/network limitation, not evidence that the public repository or commit is absent upstream.
+- No source repository was created and no partial target remains.
+- No Onyx source blob or commit metadata was obtained, so provenance, commit identity, required paths, and blob identities remain unverified.
+- No checkout, reset, clean, Docker startup, application request, scanner, runtime, provider, credential, or upstream modification occurred.
